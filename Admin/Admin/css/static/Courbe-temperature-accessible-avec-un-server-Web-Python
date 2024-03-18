@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+    
+			<title>Réaliser des courbes de température avec DS18B20</title>
+			<meta name="description" content="Dans ce projet Raspberry Pi, nous allons voir comment réaliser un serveur Python sur lequel on
+    peut accéder à une courbe de température d'un jour donné.">
+			<link rel = "icon" type = "image/png" href = "https://raspberry-lab.fr/ImgStat/Icon.png" />
+            <meta content = "text/html; charset=utf-8" http-equiv = "Content-Type">
+            <meta content = "width=device-width" name="viewport">
+            <link href="../../Obj_Stat/css/style.css" rel="stylesheet">
+            <link type="text/css" href="../../Obj_Stat/css/flatly.css" rel="stylesheet">
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=UA-96552335-1"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+        
+                gtag('config', 'UA-96552335-1');
+            </script>
+            <!-- Google Adsense -->
+            <script data-ad-client="ca-pub-6432050919011964" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- Google Tag Manager -->
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-WFZRFXB');</script>
+            <!-- End Google Tag Manager -->    <script type="application/ld+json">
+        {
+            "@context" : "http://schema.org",
+            "@type" : "CreativeWorkSeries",
+            "name" : "Réaliser des courbes de température avec DS18B20",
+            "aggregateRating" : {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "bestRating": 5,
+                "ratingCount": "16"
+            }
+        }
+        </script>
+    <script type="application/ld+json">
+        {
+            "@context" : "http://schema.org",
+            "@type" : "Article",
+            "name" : "Réaliser des courbes de température avec DS18B20",
+            "author" : {
+                "@type" : "Organization",
+                "name" : "Raspberry Lab"
+            },
+            "headline" : "Réaliser des courbes de température avec DS18B20",
+            "mainEntityOfPage" : "https://raspberry-lab.fr/Projets/Courbe-temperature-accessible-avec-un-server-Web-Python/",
+            "publisher" : {
+                "@type" : "Organization",
+                "name" : "Raspberry Lab",
+                "logo" : {
+                    "@type" : "ImageObject",
+                    "width" : 515,
+                    "height" : 515,
+                    "url" : "https://raspberry-lab.fr/ImgStat/Icon.png"
+                }
+            },
+            "datePublished" : "2018-09-13",
+            "dateModified" : "2018-09-13",
+            "image" : "https://raspberry-lab.fr/ImgStat/MenuAcc/projet-graphique-temperature.png",
+            "articleSection" : "Projets",
+            "articleBody" : "Le projet que je vous présente aujourd'hui explique comment on peut, à partir de ces données, céer une courbe de température consultable à l'aide d'un navigateur, simplement en utilisant Python et la librairie flask."
+        }
+    </script>
+</head>
+
+<body>
+    
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <a class="navbar-brand" href="/">Raspberry Lab</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item ">
+                    <a class="nav-link" href="/">Accueil</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/Tutoriels">Tutoriels</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/Composants">Modules & Composants</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/Projets">Projets</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/Articles">Articles</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="headerPB">
+        <div class="progress-container">
+            <div class="progress-bar" id="myBar"></div>
+        </div>
+    </div>
+</header>
+<br><br><br>    <h1> Projet Raspberry Pi <br> Réaliser un server Python pour consulter les courbes de température</h1>
+    <hr class="hrTitre">
+
+    <div class="row article">
+        <div class="col-12 col-xl-8">
+
+            <p>
+                <i class="far fa-clock"></i> 25 octobre 2019 • 29 <i class="far fa-comments"></i> • 4.8 <i class="far fa-star"></i>
+            </p>
+
+            <p class="intro text-gradient">
+                Nous avons vu dans le <a href="/Composants/Sonde-de-temperature-DS18B20-sur-Raspberry-Francais/" target="_blank">
+                tutoriel sur la sonde DS18B20</a> comment mesurer la température à l'aide d'un Raspberry. Le projet
+                que je vous présente aujourd'hui explique comment on peut, à partir de ces données, créer une courbe de température
+                consultable à l'aide d'un navigateur, simplement en utilisant Python et la librairie <i><b>flask</b></i>.<br>
+            </p>
+            <img src="../../ImgStat/MenuAcc/projet-graphique-temperature.png" class="img-article" alt="Réaliser des courbes de température avec DS18B20"><br>
+
+            <p>Voici un aperçu de ce que l'on va faire :</p>
+            <div>
+                <img alt = "Capture d'écran objectif projet" src="Images/Capture-objectif-projet.PNG"
+                     title = "Capture d'écran objectif projet" class = "t2Im">
+                <img alt = "Capture d'écran objectif projet" src="Images/Capture-objectif-projet2.PNG"
+                     title = "Capture d'écran objectif projet" class = "t2Im">
+            </div>
+
+
+
+            <h2> Prérequis</h2>
+            
+            <p>
+                Pour ce projet, il faut le même matériel que dans le tutoriel sur la mesure de température, rien de plus. Ce qui
+                donne dans le détail :
+            </p>
+            <ul class="prerequis">
+                <li>
+                    <a rel="nofollow" target="_blank" href="https://amzn.to/2Xzh57d">Un Raspberry Pi</a>
+                </li>
+                <li>
+                    <a rel="nofollow" target="_blank" href="https://amzn.to/35m0d6D">Une sonde DS18B20</a>
+                </li>
+                <li>
+                    <a rel="nofollow" target="_blank" href="https://amzn.to/2RtdsiJ">Des résistances (4.7KΩ) </a>
+                </li>
+                <li>
+                    <a rel="nofollow" target="_blank" href="https://amzn.to/37piSjZ">Des câbles</a>
+                </li>
+            </ul>
+                        <p>
+                Une fois tout le matériel réunis, on peut passer au branchement.
+            </p>
+
+
+            <h2> Branchement de la sonde </h2>
+            <p>
+                Ici encore, rien de nouveau, on garde le même branchement que dans le tuto, soit :
+            </p>
+
+            <img alt = "Shéma de branchement d'une DS18B20 sur Raspberry Pi 3" src = "Images/Schema-Branchement-Raspberry-Model.3-DS18B20.png"
+                 title = "Schéma de branchement d'une DS18B20 sur Raspberry Pi 3" class = "t90p ImgCentreBordure">
+
+            <p>
+                Maintenant que la sonde est branchée, on essaie de mesurer la température via le terminal pour tester la liaison.
+                <i><a target="_blank" href="/Composants/Sonde-de-temperature-DS18B20-sur-Raspberry-Francais#testLiaison">(Voir le III. du tuto sur la sonde)</a></i>
+            </p>
+
+            
+<div class='centre'> <ins class="adsbygoogle"
+     style="display:block; text-align: center"
+     data-ad-client="ca-pub-6432050919011964"
+     data-ad-slot="7179717607"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+            <h2> Installation de Flask et premiers pas</h2>
+            <div class="alert alert-dismissible alert-primary">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Important !</strong> Tout au long du projet, il faudra exécuter le fichier <i>app.py</i> avec la commande suivante :<br><br>
+                <pre style="margin-left: 5%; border-color: whitesmoke; color: #ffffff;">sudo <b>python3</b> app.py</pre>
+                Si l'on n'indique pas la version de Python <b style="text-decoration: underline">3</b>, le script ne s'exécutera pas.
+            </div>
+            <p>
+                Pour commencer, il va falloir installer la librairie flask qui va nous permettre de faire de notre Raspberry Pi un serveur
+                Web. Entrez simplement la commande suivante dans le terminal :
+            </p>
+            <p class="Code">sudo apt-get install python3-flask</p>
+            <p>
+                Maintenant que la librairie est installée, voyons les notions de base de Flask. Voici le code le plus simple utilisant la
+                librairie que l'on peut écrire :
+            </p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/af9d3fd0d96beda0087d941f8e5d2ca7.js"></script>
+            </div>
+            <p>En exécutant ce code, on devrait voir s'écrire dans le terminal  ceci :</p>
+            <p class="Code">
+                * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)<br>
+                * Restarting with stat<br>
+                * Debugger is active!<br>
+                * Debugger pin code: xxx-xxx-xxx<br>
+            </p>
+
+            <p>
+                Cela signifie que le serveur est démarré, et qu’on peut y accéder en entrant l'IP du Raspberry Pi, suivi de <i>:5000</i>,
+                qui est le numéro du port. Si on accède à cette page, on verra s'afficher <i>Hello World</i>.<br>
+                Pour tester, entrer ceci dans le champ URL d'un navigateur :
+                xxx.xxx.x.xxx:5000, où <i>xxx.xxx.x.xxx</i> est l'adresse IP du Raspberry Pi. <br>
+                Si vous ne connaissez pas l'adresse IP de votre Raspberry Pi, entrez dans une console ceci :</p>
+            <p class="Code">hostname -I</p>
+            <p><i>(et n'oubliez pas de redémarrer le serveur)</i></p><br>
+            <img alt = "Capture d'écran premier script Flask" src="Images/Capture-premier-script-flask.PNG"
+                 title = "Capture d'écran premier script Flask" class = "ImgCentreBordure t60p">
+            <p>
+                Plutôt que de renvoyer un simple texte, Flask peut retourner une page HTML. Pour se faire, il suffit de changer le
+                <i><b>return 'Hello world'</b></i> de la fonction appelée en celui-ci : <i><b>return render_template('index.html')</b></i>.<br>
+                La page <i>index.html</i> sera donc affichée sur le navigateur lorsque la fonction est appelée. <br>Pour transférer des variables
+                entre le script Python et la page HTML, on ajoute simplement l'élément à transférer comme ceci : <i>return render_template('index.html',
+                    <b>valeur="2"</b>).</i><br>Pour récupérer la donnée transférée, il suffira d'écrire <b><i>{{ valeur }}</i></b> entre
+                des balises HTML.<br><br> Prenons un exemple :<br>
+                Créez les fichiers et répertoires comme ceci sur votre Raspberry Pi :
+            </p>
+            <pre>
+├──ProjetGraphTemp
+    └── app.py<br>
+    ├── templates
+        └── index.html<br>
+    ├── static <i>(optionnel)</i>
+        └── style.css</pre>
+            <div class="card border-success mb-3">
+                <div class="card-header">Aide</div>
+                <div class="card-body"><h4 class="card-title">Pour tout créer d'un coup, entrez ces commandes dans le terminal :</h4>
+                    <pre>
+cd ~
+mkdir ProjetGraphTemp
+cd ProjetGraphTemp
+touch app.py
+mkdir templates
+touch templates/index.html
+mkdir static
+touch static/style.css</pre>
+                </div>
+            </div>
+
+            <p>Insérez le code suivant dans le fichier <i>app.py</i> :</p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/546fd193572b7bd69de10501434b37db.js"></script>
+            </div>
+            <p>Et celui-ci dans le fichier <i>index.html</i> :</p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/28b1f6a2b5c92a5980a5dbdc929ce4a1.js"></script>
+            </div>
+            <p>
+                Enfin, changez le style d'écriture ou tout autre élément graphique dans le fichier <b>css</b> si vous le souhaitez.
+                Pour faire le lien entre les documents HTML & CSS avec Flask, ajouter cette ligne dans la balise <b>&lt;head&gt;</b>
+                du code HTML :</p>
+            <pre>&lt;link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" /&gt;</pre>
+            <p>En exécutant le code Python et en se rendant à l'adresse <i>IPRaspberry</i>:5000, on obtient ceci :</p>
+            <img alt = "Capture d'écran script avec redirection HTML Flask" src="Images/Capture-deuxieme-script-flask.png"
+                 title = "Capture d'écran script avec redirection HTML Flask" class = "ImgCentreBordure t60p">
+            <p>
+                On a donc les bases pour commencer par afficher la température sur une page Web.
+            </p>
+
+            
+<div class='centre'> <ins class="adsbygoogle"
+     style="display:block; text-align: center"
+     data-ad-client="ca-pub-6432050919011964"
+     data-ad-slot="7179717607"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+
+            <h2> Afficher la température</h2>
+            <p>
+                Avec ce que l'on vient de voir et ce que l'on a déjà vu dans tutoriel sur la sonde DS18B20, il n'est pas compliqué d'afficher la température sur
+                une page HTML, il suffit de modifier un tout petit peu le code précédent.
+            </p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/5ab526d2d2ed549a3ee05cff99a3c44e.js"></script>
+            </div>
+
+            <div class="card border-info mb-3">
+                <div class="card-header">Information</div>
+                <div class="card-body text-info">
+                    <h4 class="card-title">Comment récupérer le numéro de la sonde ?</h4>
+                    <p class="pInfo">Il suffit d'entrer les commandes suivantes dans le terminal :</p>
+                    <pre>
+sudo modprobe w1-gpio
+sudo modprobe w1-therm
+ls /sys/bus/w1/devices/</pre>
+                    <p class="pInfo">
+                        Une ligne de ce type devrait s'afficher :</p>
+                    <pre><span style="color: #61d800;">28-0317229e0bff</span>  w1_bus_master1</pre>
+                    <p class="pInfo">
+                        La partie verte correspond au numéro de la sonde.<br>
+                        Si rien ne s'affiche, lire
+                        <a target = "_blank"
+                            href="/Composants/Sonde-de-temperature-DS18B20-sur-Raspberry-Francais#sondeNonDetecte">cette section</a>
+                        du tutoriel sur la DS18B20.
+                    </p>
+                </div>
+            </div>
+
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/0969d44e3984b7a6faa144a8a8da4cfc.js"></script>
+            </div>
+
+            <p>
+                En exécutant le code Python et en se rendant à l'adresse <i>IPRaspberry</i>:5000<b>/getTemp</b>, on obtient ceci :
+            </p>
+            <img alt = "Capture d'écran script avec affichage température HTML Flask" src="Images/Capture-affichage-Temperature-script-flask.PNG"
+                 title = "Capture d'écran script avec affichage température HTML Flask" class = "ImgCentreBordure t60p">
+            <p>Pour améliorer un peu l'esthétique, je vous propose ce CSS, qu'il faut ajouter dans le fichier <i><b>static/style.css</b></i> :</p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/3a03ad422a84266648fc545c92801d47.js"></script>
+            </div>
+
+            <p>En executant le code avec ce CSS, on obtient ceci :</p>
+            <img alt = "Capture d'écran script avec redirection HTML Flask et CSS" src="Images/Capture-affichage-Temperature-script-flask-avec-CSS.PNG"
+                 title = "Capture d'écran script avec redirection HTML Flask et CSS" class = "ImgCentreBordure t60p">
+
+
+            
+<div class='centre'> <ins class="adsbygoogle"
+     style="display:block; text-align: center"
+     data-ad-client="ca-pub-6432050919011964"
+     data-ad-slot="7179717607"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+            <h2>Enregistrer les températures</h2>
+            <p>
+                Pour construire un graphique de température, on va avoir besoin de données, il va falloir enregistrer les températures
+                à intervalle de temps régulier. On va pour se faire créer une fonction supplémentaire à notre code, que l'on va nommer
+                <i>enregistrement(temperature)</i>. Cette fonction va être appelée lorsque l'on fait un <i>getTemp</i>.
+                Elle va enregistrer la température donnée en paramètre dans un fichier texte ayant pour nom la date du jour.
+                Le fichier contiendra sur chaque ligne l'heure et la température associée.<br>
+                Les fichiers contenant les données de température seront de cette forme :
+            </p>
+            <pre>
+00:00 18.625
+00:15 18.437
+00:30 18.312
+00:45 18.125
+01:00 18.0
+01:15 17.812
+01:30 17.5
+01:45 17.375
+02:00 17.312</pre>
+            <div class="alert alert-dismissible alert-info">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Information</strong> J'ai déjà pensé à utiliser une base de donnée pour enregistrer les températures, mais le temps
+                        de chargement du graphique était beaucoup plus long que lorsque l'on vient lire le contenu des fichiers.
+            </div>
+            <p>Voici la fonction <i>enregistrement(temp)</i>, que j'explique juste après.</p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/952fb2a884e0fabe937030e1cfd0234e.js"></script>
+            </div>
+            <p>
+                Cette fonction prend la température en paramètre. Tout d'abord, elle ouvre le fichier dans lequel la température va
+                être enregistrée. Si le fichier n'existe pas déjà, on ouvre en mode <b>w</b> <i>(write)</i> : On crée le fichier et
+                on écrit la première température dedans. Sinon, si le fichier existe déjà, (donc des températures ont déjà été enregistrées
+                ce jour), en ouvre le fichier en mode <b>a</b> <i>(add)</i>. Une fois le fichier ouvert <i>ou créé</i>, on écrit l'heure
+                suivie de la température sur une nouvelle ligne
+            </p>
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Pourquoi ouvrir en <i>add</i> plutot qu'en <i>write</i> ?</strong><br>
+                Si on ouvre le fichier en <i>write</i>, tout le contenu qui existait déjà serait écrasé. Il faut donc d'abord vérifier
+                l'existence du fichier pour savoir si l'on utilise le mode <i>add</i> ou <i>write</i>.<br>
+                De plus, on ne peut pas être en mode <i>add</i> si le fichier n'existe pas déjà.
+            </div>
+            <p>
+                Personnellement, j'enregistre la température toutes les 15 minutes. Modifions un peu la fonction <i>getTemp</i> en lui
+                ajoutant un argument ordonnant ou non l'enregistrement de la température.
+            </p>
+            <div class="alert alert-dismissible alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Pourquoi ne pas enregistrer la température à chaque <i>getTemp</i> ?</strong><br>
+                Car plus tard, on va calculer la moyenne de température de la journée et on va la comparer. Il faut donc avoir le même
+                nombre de températures chaque jour, donc il faut qu'elle soit enregistrée seulement toutes les 15 minutes : Lorsque
+                l'on va consulter la courbe, la température sera affichée mais pas enregistrée.
+            </div>
+            <p>Voici donc le nouveau code après modifications :</p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/93094e32d5318b3018b16c0784666746.js"></script>
+            </div>
+            <p>
+                Il faut maintenant demander au Raspberry Pi de charger la page <i>IPRasp</i>:5000/getTemp?sauvegarde=True à
+                intervalle régulier, je choisis 15 minutes mais vous pouvez choisir une autre fréquence évidemment. Pour se faire,
+                on va modifier le fichier <i>crontab</i>. <br>
+                Entrez donc la commande suivante dans le terminal :
+            </p>
+            <pre>sudo crontab -e</pre>
+            <div class="card border-info mb-3">
+                <div class="card-header">Information</div>
+                <div class="card-body">
+                    <h4 class="card-title">Le fichier devrait ressembler à ceci :</h4>
+                    <pre>
+# DO NOT EDIT THIS FILE - edit the master and reinstall.
+# (/tmp/crontab.L71rF1/crontab installed on Tue May 29 20:57:03 2018)
+# (Cron version -- $Id: crontab.c,v 2.13 1994/01/17 03:20:37 vixie Exp $)
+# Edit this file to introduce tasks to be run by cron.
+#
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+#
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').#
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+#
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+#
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command</pre>
+                </div>
+            </div>
+            <p>Une fois le fichier ouvert en édition, ajoutez les lignes suivantes à la fin puis enregistrez et quittez. (la première
+                ligne permet d'executer le programme dès le démarage du Raspberry Pi)</p>
+            <pre>@reboot cd /home/pi/ProjetGraphTemp; sudo python3 app.py<br>*/15 * * * * curl localhost:5000/getTemp?sauvegarde=True</pre>
+            <p>
+                Grace à ces lignes, le Raspberry Pi exécutera le script <i>app.py</i> à  chaque démarrage et enregistrera la température
+                toutes les 15 minutes.
+            </p>
+
+            
+<div class='centre'> <ins class="adsbygoogle"
+     style="display:block; text-align: center"
+     data-ad-client="ca-pub-6432050919011964"
+     data-ad-slot="7179717607"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+
+
+            <h2>Mise en place de la courbe et des statistiques</h2>
+            <p>
+                Maintenant que la température est enregistrée à intervalle de temps régulier dans un fichier, il suffit de récupérer
+                ses données et de les insérer dans un graphique. Pour cette dernière partie, nous allons utiliser un outil développé
+                par Google : <a target="_blank" href="https://developers.google.com/chart/">Google Charts</a>.<br>
+                Google Charts permet de réaliser assez facilement un tas de graphique de tous types : Circulaires, histogrammes, cartes,
+                courbes... Pour notre projet, nous allons utiliser le module de courbes :
+                <a target="_blank" href="https://developers.google.com/chart/interactive/docs/gallery/linechart">Line Chart</a><br>
+                Pour commencer, on va créer une fonction <i>fichierVersListe(cheminFich)</i> qui va transformer les lignes contenues
+                dans le fichier de température en deux listes qui vont nous servir plus tard pour la courbe et les statistiques.</p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/26a9f8e3e20b426ef3548d0f10e881f7.js"></script>
+            </div>
+            <div class="card border-info mb-3">
+                <div class="card-header">Fonction <i>fichierVersListe(cheminFich)</i></div>
+                <div class="card-body">
+                    <h4 class="card-title">Exemple d'éxecution de la fonction :</h4>
+                    <pre>00:00 18.625
+00:15 18.437
+00:30 18.312
+00:45 18.125
+01:00 18.0</pre>
+                    <p><i>fichierVersListe(cetExemple)</i></p>
+            <pre>[
+                [['00', '00', '18.625'], ['00', '15', '18.437'], ['00', '30', '18.312'], ['00', '45', '18.125'], ['01', '00', '18.']],
+[18.625, 18.437, 18.312, 18.125, 18.0]
+            ]</pre><br>
+                    <p>
+                        <i>fichierVersListe(cetExemple)[0]</i><br>
+                        Cette liste est la liste des points que l'on va dessiner sur le graphe.
+                    </p>
+                    <pre>[['00', '00', '18.625'], ['00', '15', '18.437'], ['00', '30', '18.312'], ['00', '45', '18.125'], ['01', '00', '18.']]</pre><br>
+                    <p>
+                        <i>fichierVersListe(cetExemple)[1]</i><br>
+                        Cette liste permet de trouver très facilement la température max, min et moyenne.
+                    </p>
+                    <pre>[18.625, 18.437, 18.312, 18.125, 18.0]</pre>
+                </div>
+            </div>
+
+
+            <p>
+                On va maintenant se servir de tout ça en créant la fonction <i><b>graphTemp(date)</b></i> qui renverra sur la page HTML
+                qui s'occupera de dessiner le graphe. La fonction est la fin du code final, tout est commenté et expliqué :
+            </p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/1dfbd1cb3d1d4294ff3c958988aa5a1f.js"></script>
+            </div><br>
+            <p>
+                Enfin, voici le code HTML qui permet de transformer toutes les données transférées en un beau graphique, grâce à Google
+                charts. Ce code est à enregistrer dans le fichier <b>templates/graphTemp.html</b>.
+            </p>
+            <div class="codeGit">
+                <script src="https://gist.github.com/EspaceRaspberryFrancais/4f5a765c240b6bb67d50f39ab968c0a8.js"></script>
+            </div>
+            <p>
+                Enregistrez les images de flèche permettant la navigation entre les dates en entrant les deux lignes de commande suivantes
+                dans le terminal :
+            </p>
+            <pre>
+wget -P ~/ProjetGraphTemp/static https://raspberry-lab.fr/Projets/Courbe-temperature-accessible-avec-un-server-Web-Python/Images/nextDay.png
+wget -P ~/ProjetGraphTemp/static https://raspberry-lab.fr/Projets/Courbe-temperature-accessible-avec-un-server-Web-Python/Images/prevDay.png</pre>
+            <p>
+                En laissant tourner le programme, la journée, on obtient des courbes comme ceci (avec un Raspberry à l'extérieur) :
+            </p>
+            <div>
+                <img alt = "Capture d'écran objectif projet" src="Images/Capture-objectif-projet.PNG"
+                     title = "Capture d'écran objectif projet" class = "t2Im">
+                <img alt = "Capture d'écran objectif projet" src="Images/Capture-objectif-projet2.PNG"
+                     title = "Capture d'écran objectif projet" class = "t2Im">
+            </div><br>
+            <p>
+                PS : J'ai ajouté une statistique "année précédente" dans mon programme car j'enregistre les températures avec mon
+                Raspberry Pi depuis plusieurs années déjà ! :)<br><br><br>
+                Voilà, ce projet est maintenant terminé, n'hésitez pas à laisser un commentaire pour dire si tout a bien marché, ou si vous
+                avez quelques soucis. C'est le premier projet que j'explique entièrement, j'ai hâte de lire vos retours ! Ce projet peut
+                évidemment être amélioré, avec des statistiques plus poussées, etc. La seule limite sera votre imagination !
+            </p>
+
+            
+<div class='centre'> <ins class="adsbygoogle"
+     style="display:block; text-align: center"
+     data-ad-client="ca-pub-6432050919011964"
+     data-ad-slot="7179717607"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+    </div>
+    <div class="col-6 col-xl-4 d-none d-xl-block">
+        
+    <h4 class="side">A lire</h4>
+
+        
+        <a href="/Composants/Sonde-de-temperature-DS18B20-sur-Raspberry-Francais">
+            <div class="row">
+                    <div class="col">
+                        <picture>
+                            <source srcset="../../ImgStat/MenuAcc/MedSizeWebP/Mesure-Temperature-Python-Raspberry.webp">
+                            <img alt="Branchement caméra - présentation" src="../../ImgStat/MenuAcc/MedSize/Mesure-Temperature-Python-Raspberry.png"
+                            class="imgSide" style='border-radius: 10px !important;' >
+                        </picture>
+                    </div>
+                    <div class="col"><p class="side-text">Obtenir la température avec une sonde DS18B20</p></div>
+            </div>
+        </a><br><ins class="adsbygoogle"
+         style="display:block; margin-left: 10%; margin-right: .2em"
+         data-ad-format="fluid"
+         data-ad-layout-key="-hc-1x-r+20+8w"
+         data-ad-client="ca-pub-6432050919011964"
+         data-ad-slot="3325847477"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>        
+        <a href="/Composants/Utilisation-Camera-sur-Raspberry-Pi-Francais">
+            <div class="row">
+                    <div class="col">
+                        <picture>
+                            <source srcset="../../ImgStat/MenuAcc/MedSizeWebP/Module-Camera.webp">
+                            <img alt="Branchement caméra - présentation" src="../../ImgStat/MenuAcc/MedSize/Module-Camera.png"
+                            class="imgSide" style='border-radius: 10px !important;' >
+                        </picture>
+                    </div>
+                    <div class="col"><p class="side-text">Choisir et utiliser une caméra sur un Raspberry Pi</p></div>
+            </div>
+        </a><br>            <br>
+<div id="stick">
+    <h4 class="side">Bons plans du 18 avril</h4>
+    
+    
+    
+    
+    
+   <div class="row">
+                <div class="col">
+                <a href='https://amzn.to/2BrYkM9' target='_blank'>
+                    <picture>
+                        <source srcset="../../Obj_Stat/side/Images/kit_labist.webp">
+                        <img alt='promotion raspberry' src="../../Obj_Stat/side/Images/kit_labist.png"
+                        class="imgSide" >
+                    </picture>
+                    </a>
+                </div>
+                <div class="col">
+                    <p class="side-text"><a target="_blank" rel="noopener" href="https://amzn.to/2BrYkM9">Starter Kit Raspberry Pi 4 version 4Go, carte SD 32Go</a><br>
+                    <span class='side-price'><span style='font-weight: 200; text-decoration: line-through;'>119.99€<br></span> 🔥 93.49€ 🔥</span></p>
+                    <a target="_blank" rel="noopener" href="https://amzn.to/2BrYkM9">
+                        <button type="button" class="btn btn-primary">Voir l'offre</button>
+                    </a>
+                </div>
+        </div><br>
+
+    
+    
+    
+    
+    
+    <div class="row">
+                <div class="col">
+                <a href='https://amzn.to/3uCYpCO' target='_blank'>
+                    <picture>
+                        <source srcset="../../Obj_Stat/side/Images/camera_v2.webp">
+                        <img alt='promotion raspberry' src="../../Obj_Stat/side/Images/camera_v2.png"
+                        class="imgSide" >
+                    </picture>
+                    </a>
+                </div>
+                <div class="col">
+                    <p class="side-text"><a target="_blank" rel="noopener" href="https://amzn.to/3uCYpCO">Caméra Raspberry Pi v2 8MP 1080p</a><br>
+                    <span class='side-price'><span style='font-weight: 200; text-decoration: line-through;'></span> 28.99€<br></span></p>
+                    <a target="_blank" rel="noopener" href="https://amzn.to/3uCYpCO">
+                        <button type="button" class="btn btn-primary">Voir l'offre</button>
+                    </a>
+                </div>
+        </div><br>
+    <div class="row">
+                <div class="col">
+                <a href='https://amzn.to/3ghQNzs' target='_blank'>
+                    <picture>
+                        <source srcset="../../Obj_Stat/side/Images/kit_boitier.webp">
+                        <img alt='promotion raspberry' src="../../Obj_Stat/side/Images/kit_boitier.png"
+                        class="imgSide" >
+                    </picture>
+                    </a>
+                </div>
+                <div class="col">
+                    <p class="side-text"><a target="_blank" rel="noopener" href="https://amzn.to/3ghQNzs">Kit boitier + alimentation + accessoires</a><br>
+                    <span class='side-price'><span style='font-weight: 200; text-decoration: line-through;'></span> 20.99€</span></p>
+                    <a target="_blank" rel="noopener" href="https://amzn.to/3ghQNzs">
+                        <button type="button" class="btn btn-primary">Voir l'offre</button>
+                    </a>
+                </div>
+        </div><br>
+    
+    
+    </div>
+    </div>
+</div>
+
+</body>
+
+
+
+    <br>
+
+<div class="bandeauAvis">
+    <br><br>
+    <h1 id="h1Avis">Ce tutoriel vous a plu ?</h1>
+
+    <div id="starsMark" class="centre">
+        <img alt="star" id="star0" src="/ImgStat/notes/star-vide.png" class="starImg"
+        ><img alt="star" id="star1" src="/ImgStat/notes/star-vide.png" class="starImg"
+        ><img alt="star" id="star2" src="/ImgStat/notes/star-vide.png" class="starImg"
+        ><img alt="star" id="star3" src="/ImgStat/notes/star-vide.png" class="starImg"
+        ><img alt="star" id="star4" src="/ImgStat/notes/star-vide.png" class="starImg">
+    </div>
+    <p class="pAvis textCentre">
+        <span id="mark">4.8</span>/5 | 16 votes    </p>
+    <br><br>
+</div>
+<script type="application/javascript" src="/Obj_Stat/js/simpleAjax.js"></script>
+<script type="application/javascript" src="/Obj_Stat/js/markSystem.js"></script>
+
+<script>
+    window.onload = function () {
+
+        function repClick() {
+            var id = this.value;
+            var inputRep = document.querySelector("#enrIDRep");
+            inputRep.value = id;
+        }
+
+        var btnRep = document.querySelectorAll(".btnRep");
+        for(var i=0; i<btnRep.length; i++) {
+            btnRep[i].onclick = repClick;
+        }
+    };
+</script>
+
+
+<br>
+
+<h2 id="espaceComm" class="margin-card">Commentaires</h2>
+<h5 class='h5NComm margin-card'><i>29 commentaires publiés.</i></h5><br>
+<div class="margin-card">
+        <div id = "comID598" class="btnRepComm card border-light mb-3  normalComm">
+            <div class="card-header"><b>Lat dior</b>, le 28/03/2021 à 20h54</div>
+            <div class="card-body">Un grand merci . Tout fonctionne pour moi . Je voudrais juste quelques pistes pour réaliser une autre courbe , si possible sur le même graphique mais d'une autre couleur, puisqu'il s'agit d'une 2éme sonde.<br />
+<br>
+                <a href="?repID=598#formulaire">
+                    <button value='598' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID599" class="btnRepComm card border-light mb-3  repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 28/03/2021 à 22h10</div>
+            <div class="card-body">Bonsoir @Lat dior,<br />
+Pour avoir plusieurs courbes sur le même graphique, je vous laisse avec la documentation de la librairie utilisée (Google Charts) : <a href="https://developers.google.com/chart/interactive/docs/gallery/linechart" target="_blank">https://developers.google.com/chart/interactive/docs/gallery/linechart</a>.<br />
+Au niveau du Raspberry Pi, il suffira d'enregistrer les températures des deux sondes. La partie qui peut être plus délicate sera l'adaptation du code JS (dans <i>templates/graphTemp.html</i>). Ceci dit, les ajouts à faire devraient être plus ou moins similaires à ce qui a déjà été fait dans le tutoriel.<br />
+<br />
+En espérant vous avoir aidé,<br />
+N'hésitez pas à poster votre avancement / questions ici !<br />
+<br />
+Bonne continuation,<br />
+Raspberry Lab.<br>
+                <a href="?repID=598#formulaire">
+                    <button value='598' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID524" class="btnRepComm card border-light mb-3  normalComm">
+            <div class="card-header"><b>vercors99</b>, le 06/01/2021 à 11h52</div>
+            <div class="card-body">Bravo et merci pour ce tutoriel, très clair, même pour un non-informaticien !!.<br />
+L'acquisition fonctionne parfaitement et me permets de surveiller la température en mon absence.<br />
+J'envisage d'ajouter une seconde sonde pour avoir aussi la température extérieure<br />
+Cordialement<br>
+                <a href="?repID=524#formulaire">
+                    <button value='524' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID420" class="btnRepComm card border-light mb-3  normalComm">
+            <div class="card-header"><b>DKT</b>, le 08/10/2020 à 12h28</div>
+            <div class="card-body">Bonjour,<br />
+<br />
+Serait-il possible de faire un petit exemple avec <br />
+<br />
+import os<br />
+import time<br />
+<br />
+def measure_temp():<br />
+        temp = os.popen("vcgencmd measure_temp").readline()<br />
+        return (temp.replace("temp=",""))<br />
+<br />
+while True:<br />
+        print(measure_temp())<br />
+        time.sleep(1)<br />
+<br />
+Pour avoir la température du CPU en direct sans page html<br>
+                <a href="?repID=420#formulaire">
+                    <button value='420' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID310" class="btnRepComm card border-light mb-3  normalComm">
+            <div class="card-header"><b>tao1024</b>, le 01/06/2020 à 22h32</div>
+            <div class="card-body">Bonjour à tous, <br />
+<br />
+J'ai remplacé les deux urls en 404 (css et js) par : <br />
+https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css<br />
+https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js<br />
+<br />
+Les données se remplissent, mais aucune courbe ni valeurs sur la page. <br>
+                <a href="?repID=310#formulaire">
+                    <button value='310' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID312" class="btnRepComm card border-light mb-3  repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 02/06/2020 à 23h47</div>
+            <div class="card-body">Bonsoir @tao1024,<br />
+concernant les liens morts, c'est gentil d'avoir partagé les nouvelles ressources, mais en réalité, elles sont inutiles pour ce projet &#128577 Comme je viens d'éditer le commentaire de @Clem, elles dataient d'une ancienne implémentation du projet.<br />
+Concernant votre soucis de courbe (qui n'est donc pas lié aux liens js et css), je viens de refaire le tuto sur un nouveau Raspberry Pi, et je parviens à le finir. <br />
+<br />
+Pouvez-vous préciser votre soucis ? <br />
+Le html du graphique est-il bien dans <i>templates/graphTemp.html</i> ?<br />
+Vous rendez-vous bien à l'adresse <i>IP:5000/graphTemp</i> ?<br />
+<br />
+Je vais améliorer la fin du tuto dans les prochains jours, afin de le rendre plus clair.<br />
+<br />
+D'ici là, j'attends vos réponses pour pouvoir vous aider ! &#128578<br>
+                <a href="?repID=310#formulaire">
+                    <button value='310' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID313" class="btnRepComm card border-light mb-3  repComm">
+            <div class="card-header"><b>tao1024</b>, le 03/06/2020 à 18h28</div>
+            <div class="card-body">Bonjour @RaspBerryLab, <br />
+<br />
+Effectivement j'avais fait une erreur sur le nom du fichiers html: <br />
+Il était libellé templates/index.html au lieu de  templates/graphTemp.html <br />
+<br />
+Merci beaucoup. <br />
+Et bravo pour ce projet très pratique. <br>
+                <a href="?repID=310#formulaire">
+                    <button value='310' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID314" class="btnRepComm card border-light mb-3  repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 03/06/2020 à 21h46</div>
+            <div class="card-body">Parfait ! J'ai fait la même erreur hier en refaisant le tuto, je vais le modifier &#128578<br />
+<br />
+Content que le projet vous ait plu, et bonne continuation sur Raspberry Pi !<br>
+                <a href="?repID=310#formulaire">
+                    <button value='310' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID306" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>Clem</b>, le 16/05/2020 à 13h39</div>
+            <div class="card-body">Bonjour,<br />
+<br />
+merci pour ce tuto très utile. Tous fonctionne bien de mon cote, sauf deux fichiers qui n'existe plus, il s'agit du js et du css. Quelqu'un pourrait il me communiquer le contenu de ces fichiers?<br>
+                <a href="?repID=306#formulaire">
+                    <button value='306' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID307" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 18/05/2020 à 10h50</div>
+            <div class="card-body">Bonjour @Clem,<br />
+Content que le tuto vous ai plu ! Concernant les fichiers js et css, en effet, leurs url ne sont plus accessibles. <br />
+Cependant, ce sont des appels résiduels d'une ancienne implémentation du projet, et ils sont inutiles dans la version présentée ! Je viens donc de supprimer leurs appels.<br />
+<br />
+Bonne continuation :)<br />
+Raspberry Lab.<br>
+                <a href="?repID=306#formulaire">
+                    <button value='306' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID317" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Clem</b>, le 15/06/2020 à 17h45</div>
+            <div class="card-body">Bonjour,<br />
+désolé pour le délai de réponse, mais en effet les sans les liens j'ai quand meme l'interface de fonctionnelle.<br>
+                <a href="?repID=306#formulaire">
+                    <button value='306' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID301" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>abn55</b>, le 21/04/2020 à 21h40</div>
+            <div class="card-body">Bonjour,<br />
+Débutant en programmation Python, je suis entrain de réaliser une application qui doit me permettre, à terme, d'afficher sur une page HTML des relevés de températures provenant d'une dizaine de sonde.<br />
+En phase de test, j'ai déjà réalisé le tuto  "lire la température à l'aide d'une sonde".<br />
+Tout fonctionne très bien et je parviens à afficher les températures de 2 sondes dans un fichier texte.<br />
+Dans ce tuto, j'arrive à la fin de la première étape avec l'affichage de la page HTML "Bienvenue sur espace RaspberryFrancais"<br />
+En revanche, dès que je passe à l'étape suivante "afficher la température",  l'affichage de la page HTML me renvoie le message suivant : <br />
+Not Found<br />
+The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<br />
+A la fin de l'exécution du code, sur app.py, j'ai le message suivant :<br />
+* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)<br />
+ * Restarting with stat<br />
+ * Debugger is active!<br />
+ * Debugger PIN: 207-644-360<br />
+192.168.43.167 - - [21/Apr/2020 21:15:29] "GET / HTTP/1.1" 404 -<br />
+<br />
+Merci de bien vouloir m'apporter un peu d'aide.<br>
+                <a href="?repID=301#formulaire">
+                    <button value='301' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID311" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 02/06/2020 à 23h23</div>
+            <div class="card-body">Bonsoir @abn55,<br />
+Vous avez sûrement déjà dû trouver la solution mais je pense que le problème venait du fait qu'à partir de cette section, il faut ajouter /getTemp à l'URL pour obtenir la ressource !<br>
+                <a href="?repID=301#formulaire">
+                    <button value='301' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID278" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>Pat5331</b>, le 13/02/2020 à 00h17</div>
+            <div class="card-body">Bonjour, j'ai réalisé  le tuto, le fichier se  rempli avec  l'heure et la température, mais rien ne s'affiche  sur la page web concernant la courbe et la température moyenne.<br />
+J'ai bien la grille du graph les deux flèches en bas, mais pas de tracé de courbe.<br />
+Quel est mon problème je ne vois pas<br>
+                <a href="?repID=278#formulaire">
+                    <button value='278' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID279" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Pat5331</b>, le 13/02/2020 à 00h25</div>
+            <div class="card-body">Bonjour, je me suis trompé de tuto lors de ma demande précédente desolé...<br />
+ Sur celui-ci , j'ai bien suivi me semble t il le tuto, mais si le fichier se rempli bien toutes les 15 minutes avec l'heure et la température, sur la page web rien ne s'affiche comme valeur, et pas de tracé de courbe. juste la grille les flèches et température moyenne sans valeur.<br />
+Quel est mon problème .<br />
+Cordialement <br>
+                <a href="?repID=278#formulaire">
+                    <button value='278' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID246" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>Damien</b>, le 10/01/2020 à 20h38</div>
+            <div class="card-body">Hello,<br />
+<br />
+Super tuto<br />
+<br />
+juste un soucis au moment ou j'intègre le code ou on intègre l'ID de la sonde et que je lance le truc, j'ai chaque fois le message :Not Found<br />
+<br />
+The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.<br />
+<br />
+quelqu'un peux m'aider?<br />
+<br />
+salutations<br>
+                <a href="?repID=246#formulaire">
+                    <button value='246' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID197" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>cedric</b>, le 01/08/2019 à 18h21</div>
+            <div class="card-body">Super merci sa tourne et encore deux questions : <br />
+dans quel ligne je peux modifier la prise de température car pour le moment il pend toute les minutes..<br />
+Et dernières questions je pense que cela est possible d'afficher deux courbes de températures sur le même graph pour du genre température extérieur et intérieur est ce c'est possible d'avoir un peu d'aide ?<br>
+                <a href="?repID=197#formulaire">
+                    <button value='197' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID201" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Cedrix</b>, le 17/08/2019 à 09h27</div>
+            <div class="card-body">Bonjour je reviens car j’ai un autre soucis au bout de quelques jours de fonctionnement j’ai un nouveau message d’erreur sur la page de visualisation du graph, il me dit qu’il ne trouve pas le fichier text avec la date du jour. Pour alimenter le graph...<br />
+Savez vous pourquoi ?<br>
+                <a href="?repID=197#formulaire">
+                    <button value='197' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID190" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>cédric</b>, le 28/07/2019 à 13h06</div>
+            <div class="card-body">j'ai un autre  soucis quand j'execute le code :<br />
+from flask import Flask<br />
+<br />
+app = Flask(__name__)<br />
+<br />
+@app.route('/')<br />
+def index():<br />
+    return 'Hello world'<br />
+<br />
+app.run(debug=True, host='0.0.0.0', port=5000)<br />
+<br />
+j'ai cette réponse :<br />
+ * Running on http://0.0.0.0:5000/<br />
+<br />
+Traceback (most recent call last):<br />
+  File "/home/pi/Documents/temperature/test 1.py", line 9, in <module><br />
+    app.run(debug=True, host='0.0.0.0', port=5000)<br />
+  File "/usr/lib/python2.7/dist-packages/flask/app.py", line 772, in run<br />
+    run_simple(host, port, self, **options)<br />
+  File "/usr/lib/python2.7/dist-packages/werkzeug/serving.py", line 706, in run_simple<br />
+    test_socket.bind((hostname, port))<br />
+  File "/usr/lib/python2.7/socket.py", line 224, in meth<br />
+    return getattr(self._sock,name)(*args)<br />
+error: [Errno 98] Address already in use<br />
+<br />
+pouvez vous m'aider  à résoudre ce problème ?<br />
+<br />
+Je suis un débutant tout frais dans le domaine je n'ai aucune connaissance de base sur ce domaine n'hesitez pas à me le dire si je fais n'importe quoi.....<br>
+                <a href="?repID=190#formulaire">
+                    <button value='190' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID191" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 28/07/2019 à 22h31</div>
+            <div class="card-body">Bonjour cédric,<br />
+cette erreur apparaît lorsque vous tentez de lancer plusieurs serveurs sur le même port. Concrètement, vous avez dû lancer le script plusieurs fois sans éteindre le serveur.<br />
+Redémarrer le Raspberry devrait résoudre le problème.<br />
+Sinon, <a href="https://medium.com/@sanzidkawsar/the-python-flask-problem-oserror-errno-98-address-already-in-use-flask-49daaccaef4f" target="_blank">ce lien</a> explique comment résoudre le problème sans redémarrer.<br />
+<br />
+Tenez-moi au courant !<br>
+                <a href="?repID=190#formulaire">
+                    <button value='190' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID193" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>cedric</b>, le 29/07/2019 à 08h28</div>
+            <div class="card-body">Bonjour est merci pour la reactivité, j'avais remarqué cela hier soir en me disant justement que j'avais surment mal arrêté le script et comme je ne savais pas comment l'arrêté correctement un bon redémarrage fairait bien l'affaire, depuis mon dernier poste j'ai réussi à avancé un peu, j'ai réussi à faire affiché la température sur la page HTML, j'ai cependant un petit soucis au chapitre 4 ou exactement je dois mettre cette ligne de code "<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />" pour améliorer l'esthétique ?<br />
+Ensuite au chapitre 5 j'ai un autre problème avec cette ligne de code : <br />
+#Ajouter les imports suivants en debut de fichier<br />
+from datetime import datetime, timedelta<br />
+import os<br />
+<br />
+# Entree : temperature; Fonction : enregistrer la temperature dans un fichier, au bon endroit<br />
+def enregistrement(temperature):<br />
+    d = datetime.now()<br />
+    # On recupere de datetime.now l'annee & le jour et on le stocke<br />
+    annee = str(d)[:4]<br />
+    jour = str(d)[:10]<br />
+    repertoire = '/home/pi/ProjetGraphTemp/temperatures/' + annee + '/'<br />
+    # On vérifie que le repertoire existe. S'il n'existe pas : on le cree<br />
+    if not os.path.isdir(repertoire):<br />
+        os.makedirs(repertoire)<br />
+    fich_Temp = repertoire + jour + '.txt'<br />
+    # On ouvre le fichier ayant pour nom la date_du_jour.txt en fonction de s'il existe ou pas : en add ou en write<br />
+    if os.path.exists(fich_Temp):<br />
+        # Le fichier existe, on l'ouvre en mode ajout<br />
+        f = open(fich_Temp, "a")<br />
+    else:<br />
+        # Le fichier n'existe pas, on le cree et on l'ouvre<br />
+        f = open(fich_Temp, "w")<br />
+    # Enfin, on ajoute une ligne dans le fichier au format : HH:MM Temp _ Exemple : 10:15 27.02<br />
+    time = d.strftime("%H:%M")<br />
+    print(str(time) + " " + str(temperature), file=f)<br />
+    f.close()<br />
+A la fin du script j'ai constamment une érreur de syntaxe à la fin sur "file=f" est ce que je dois modifier quelque chose à cette endroit ?<br />
+Idem au chapitre suivant j'ai copier le script complet en y ajoutant l'adresse IP du raspi et en indiquant la réf de la sonde et j'ai le même érreur de syntaxe.<br />
+<br />
+<br>
+                <a href="?repID=190#formulaire">
+                    <button value='190' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID194" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 30/07/2019 à 09h53</div>
+            <div class="card-body">Bonjour, <br />
+pour le problème de syntaxe avec <i>file=f</i>, il me semble que j'avais déjà rencontré cette erreur et que la solution était de lancer le script avec <b>sudo python3 app.py</b> au lieu de <b>sudo python app.py</b>.<br />
+<br />
+Bonne continuation !<br>
+                <a href="?repID=190#formulaire">
+                    <button value='190' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID163" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>TyraxaryT</b>, le 03/06/2019 à 15h06</div>
+            <div class="card-body">Bonjour, est il possible de faire la même démarche mais en passant par une base de données ? C'est à dire récupéré les valeurs de la température de la base de données pour y afficher une courbe. Tout en suivant votre programme en python. MErci<br>
+                <a href="?repID=163#formulaire">
+                    <button value='163' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID164" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 04/06/2019 à 19h26</div>
+            <div class="card-body">Bonjour @TyraxaryT,<br />
+Il est en effet tout à fait envisageable de passer par une base de donnée pour stocker les températures tout en gardant une bonne partie du programme ci-dessus. <br />
+Il faudrait pour se faire tout d'abord modifier la fonction enregistrer(), pour sauvegarder les valeurs dans une base plutôt que dans un fichier txt. Cette première étape est assez abordable, en cherchant des infos sur l'utilisation de BDN avec Python. <br />
+Ensuite, il faudra envoyer les bonnes valeurs, sous la bonne forme à la page graphTemp.html pour que l'API Google Chart dessine le graphique correctement.<br />
+<br />
+Je vais bientôt avoir du temps libre ce qui me permettra d'écrire l'alternative par base de données, directement dans le tutoriel.<br />
+<br />
+En attendant n'hésitez pas à me poser des questions, si vous rencontrez un problème ou autre.<br />
+<br />
+Cordialement,<br />
+RaspberryLab.<br>
+                <a href="?repID=163#formulaire">
+                    <button value='163' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID156" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>D@D0U</b>, le 11/05/2019 à 17h34</div>
+            <div class="card-body">Bonjour,<br />
+je viens de réaliser le tuto pas à pas et tout fonctionne.<br />
+Merci<br>
+                <a href="?repID=156#formulaire">
+                    <button value='156' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID80" class="btnRepComm card border-light mb-3 seeMore normalComm">
+            <div class="card-header"><b>pierro49</b>, le 15/01/2019 à 12h39</div>
+            <div class="card-body">Bonjour,<br />
+Lorsque j'essaie de compiler j'ai une erreur sur la ligne "print(str(time) + " " + str(temperature), file=f)" <br />
+SyntaxError<br />
+Avez-vous une idée?<br />
+<br />
+Merci<br>
+                <a href="?repID=80#formulaire">
+                    <button value='80' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID81" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 15/01/2019 à 15h54</div>
+            <div class="card-body">Bonjour pierro49,<br />
+Exécutez-vous bien le script à l'aide de la commande <i>sudo python3 app.py</i> ? <br />
+Car il me semble que si l'on ne spécifie pas la version 3 de Python, le script ne s’exécute pas. <br />
+<br />
+Si cela ne résous pas le problème, informez m'en pour qu'on trouve une solution. <br />
+<br />
+Cordialement, <br />
+RaspberryLab.<br>
+                <a href="?repID=80#formulaire">
+                    <button value='80' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID86" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>pierro49</b>, le 16/01/2019 à 16h09</div>
+            <div class="card-body">Bonjour,<br />
+<br />
+Tout d'abord merci pour votre réactivité sur mon précédent message. <br />
+Lorsque j'ouvre la page monip/getTemp j'obtiens ceci:<br />
+<br />
+Traceback (most recent call last)<br />
+File "/usr/lib/python3/dist-packages/flask/app.py", line 1997, in __call__<br />
+return self.wsgi_app(environ, start_response)<br />
+File "/usr/lib/python3/dist-packages/flask/app.py", line 1985, in wsgi_app<br />
+response = self.handle_exception(e)<br />
+File "/usr/lib/python3/dist-packages/flask/app.py", line 1540, in handle_exception<br />
+reraise(exc_type, exc_value, tb)<br />
+File "/usr/lib/python3/dist-packages/flask/_compat.py", line 33, in reraise<br />
+raise value<br />
+File "/usr/lib/python3/dist-packages/flask/app.py", line 1982, in wsgi_app<br />
+Open an interactive python shell in this frame...<br />
+<br />
+Cordialement<br>
+                <a href="?repID=80#formulaire">
+                    <button value='80' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        
+        <div id = "comID87" class="btnRepComm card border-light mb-3 seeMore repComm">
+            <div class="card-header"><b>Raspberry Lab</b>, le 17/01/2019 à 12h38</div>
+            <div class="card-body">Bonjour,<br />
+Je viens de refaire le tuto sur un Raspberry remis à zéro et je n'ai pas obtenu d'erreur, à part à l’exécution du premier script où la fonction <i>getTemp()</i> était appelée avec un paramètre alors qu'il n'y en avait pas dans sa définition (J'ai par conséquent corrigé le script et tout marche). Le problème est que votre erreur n'a pas l'air d'être liée à cela. <br />
+<br />
+Dans le <b>III. Installation de Flask et premiers pas</b> tout marche bien ?<br />
+C'est à partir de <b>IV</b> que ça ne fonctionne plus ?<br />
+Essayez de modifier la définition <i>def getTemp()</i> par <i>def getTemp(sauvegardeStatus)</i>, même si l'erreur semble venir d'ailleurs.<br />
+<br />
+Cordialement, <br />
+RaspberryLab.<br>
+                <a href="?repID=80#formulaire">
+                    <button value='80' style="float: right;" class="btn btn-primary btnRep">
+                        <img alt='reply' src="/ImgStat/commentaires/reply.png">
+                        <span class='repTxt'>Répondre</span>
+                    </button>
+                </a>
+            </div> 
+        </div>
+        <button type="button" class="btn btn-info btnCentre" id='btnSeeMore''>Voir plus</button></div>
+
+<div id="formulaire">
+    <br><br>
+    <div class="card border-dark mb-3 margin-card">
+        <div class="card-body text-dark">
+            <form action="/Obj_Stat/espace_commentaire.php" method="post">
+                <fieldset>
+                    <legend style="margin-left: 2%">Commenter </legend>
+                    <div class="form-group">
+                        <label required for="forCommentaire">Commentaire</label>
+                        <textarea name='commentaire' type="text" class="form-control" id="forCommentaire" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label required class="col-form-label" for="forPseudo">Pseudo</label>
+                        <input name='nom' type="text" class="form-control" id="forPseudo">
+                    </div>
+                    <div class="form-group">
+                        <label required for="forMail">Adresse mail</label>
+                        <input name='mail' type="email" class="form-control" id="forMail" aria-describedby="emailHelp" >
+                        <small id="emailHelp" class="form-text text-muted"><i>Votre adresse mail ne sera pas visible sur le site.</i></small>
+                    </div>
+                    <div class="form-group">
+                        <label required for="forNotif">Notifications</label>
+                        <select class="form-control" id="forNotif" name="notif">
+                            <option>Ne pas me notifier des réponses à mes commentaires</option>
+                            <option>Me notifier des réponses à mes commentaires</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="adresse" value="/Projets/Courbe-temperature-accessible-avec-un-server-Web-Python/index.php" />
+                    <input id="enrIDRep" type="hidden" name="reponse" value="0" />
+
+                    <div style="margin-left: 5%" class="g-recaptcha" data-sitekey="6LdXptgUAAAAAC0RDKx0iJZ1ytnGJ-LPD8SOgKvo"></div>
+                    <p><i style="margin-left: 2%; font-size: small">Les commentaires sous soumis à vérification avant publication.</i></p>
+                    <button style="margin-left: 5%" name="submit_post" type="submit" class="btn btn-primary">
+                        <img alt="Laisser le commentaire" src="/ImgStat/commentaires/comment.png">
+                        <span class="btnRep">Laisser un commentaire</span>
+                    </button>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class='centre'> <ins class="adsbygoogle"
+     style="display:block; text-align: center"
+     data-ad-client="ca-pub-6432050919011964"
+     data-ad-slot="7179717607"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+        <script type="application/javascript">
+            window.onscroll = function() {scrollBar()};
+        
+            window.onload = function () {
+                let btnState = false;
+                let btnSeeMore = document.getElementById("btnSeeMore");
+        
+                function btnSeeMoreClicked() {
+                    let seeMoreComms = document.querySelectorAll(".seeMore");
+                    for(let i=0; i<seeMoreComms.length; i++) {
+                        if(!btnState) {
+                            seeMoreComms[i].setAttribute('style', 'display:flex !important');
+                        } else {
+                            seeMoreComms[i].setAttribute('style', 'display:none !important');
+        
+                        }
+                    }
+                    if(!btnState) {
+                        btnSeeMore.innerText = "Voir moins";
+                        btnState = true;
+                    } else {
+                        btnSeeMore.innerText = "Voir plus";
+                        btnState = false;
+                    }
+                }
+                
+                if(btnSeeMore) {
+                    btnSeeMore.onclick = btnSeeMoreClicked;
+                }
+            };
+        
+            function scrollBar() {
+                let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                let scrolled = (winScroll / height) * 100;
+                document.getElementById("myBar").style.width = scrolled + "%";
+            }
+        </script>
+    <br>
+<footer id="footer" class="footer-1">
+    <div class="main-footer widgets-dark typo-light">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-6 col-md-5">
+                    <div class="widget subscribe no-box">
+                        <h5 class="widget-title">Raspberry Lab<span></span></h5>
+                        <p>
+                            Raspberry Lab est un site proposant des tutoriels et articles autour du Raspberry Pi.<br><br>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="widget no-box">
+                        <h5 class="widget-title">Catégories<span></span></h5>
+                        <ul class="thumbnail-widget">
+                            <li>
+                                <div class="thumb-content"><a href="/Tutoriels">Tutoriels</a></div>
+                            </li>
+                            <li>
+                                <div class="thumb-content"><a href="/Composants">Modules & composants</a></div>
+                            </li>
+                            <li>
+                                <div class="thumb-content"><a href="/Projets">Projets</a></div>
+                            </li>
+                            <li>
+                                <div class="thumb-content"><a href="/Articles">Articles</a></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-4">
+
+                    <div class="widget no-box">
+                        <h5 class="widget-title">Contact<span></span></h5>
+                        <p>
+                            Contactez-nous pour obtenir de l'aide, signaler des erreurs, proposer des idées, etc !
+                        </p>
+                        <a class="btn" href="/A-Propos/Contact">Contactez-nous</a><br><br>
+                        <ul class="social-footer2">
+                            <li class=""><a href="https://www.facebook.com/RaspberryLabFR/" target="_blank" rel="noopener" title="Facebook"><img alt="Facebook" width="30" height="30" src="data:image/png;base64,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"></a></li>
+                            <li class=""><a title="youtube" target="_blank" rel="noopener" href="https://www.youtube.com/channel/UCSg3Hax8YrIrvpEbOyWYnqg/"><img alt="youtube" width="30" height="30" src="data:image/png;base64,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"></a></li>
+                        </ul><br>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-copyright">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <p style="text-align: center">
+                        Site et contenus créés par <a href="https://www.linkedin.com/in/alexandre-mazurier-17a070158/" target="_blank">Alexandre Mazurier</a>.<br>
+                        Raspberry Lab - 2014-2021 Textes soumis au droit d'auteur.
+                    </p>
+                    <p class="infosFooter">
+                        En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.
+                        Raspberry-lab.fr est hebergé par SARL LWS.<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+
+
+<script src="https://kit.fontawesome.com/178b27c0fe.js" crossorigin="anonymous"></script>
+
+</html>

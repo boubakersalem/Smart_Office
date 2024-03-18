@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Historique des bureaux</title>
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <link rel="stylesheet" href="plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+  <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <link rel="stylesheet" href="plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+  <link rel="stylesheet" href="plugins/bs-stepper/css/bs-stepper.min.css">
+  <link rel="stylesheet" href="plugins/dropzone/min/dropzone.min.css">
+ <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+  <nav class="main-header navbar navbar-expand navbar-blue navbar-primary ">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars" style='color:#f3f1ec' ></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="#" class="nav-link" style='color:#fefdfb'></a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+     <li class="nav-item">
+          <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+            <i class="fas fa-expand-arrows-alt" style='color:#f8f8f8' ></i>
+          </a>
+        </li>
+        
+      </ul>
+    </nav>
+    <aside class="main-sidebar sidebar-primary-white elevation-4">
+      <div style="background-color: #5bc0de;">
+       <a href="index.html" class="brand-link">
+         <img src="login/assets/img/logo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+         <div class="inner" style='color:#0e0d0d'  >Chaaben Group</div>
+       </a>
+     </div>
+       
+       <div class="sidebar">
+   
+         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+           <div class="image">
+             <img src="" class="img-circle elevation-2" alt="User Image" id="image">
+           </div>
+           <div class="info">
+             <a href="profile.html" class="d-block"  id="username" >  </a>
+           </div>
+         </div>
+         <script> 
+           var c = localStorage.getItem("idAdmin");
+               console.log(c);
+              var url3 = "http://192.168.43.167:3000/admins/" + c ;
+               var xhr3 = new XMLHttpRequest();
+               xhr3.open("GET", url3, true);
+           
+               xhr3.onload = function () {
+                   var admin = JSON.parse(xhr3.responseText);
+                   if (xhr3.readyState == 4 && xhr3.status == "200") {
+                    
+                     document.getElementById("username").innerHTML = admin.name;
+                     document.getElementById("image").src = admin.picture;
+                   } else {
+           
+                       console.log("error");
+                   }
+               }
+           
+               xhr3.send(null);
+            
+           </script>
+        <hr>
+         <div class="form-inline">
+           <div class="input-group" data-widget="sidebar-search">
+             <input class="form-control form-control-sidebar" type="search" placeholder="Rechercher" aria-label="Search">
+             <div class="input-group-append">
+               <button class="btn btn-sidebar">
+                 <i class="fas fa-search fa-fw"></i>
+               </button>
+             </div>
+           </div>
+         </div>
+        <div class="form-inline">
+        <nav class="mt-2">
+           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            
+                  
+                   <a href="index.html" class="nav-link">
+                     <i class="nav-icon fas fa-tachometer-alt"></i>
+                     <p  >
+                       Acceuil
+                      
+                     </p>
+                   </a>
+                  <hr>
+              <li class="nav-item">
+               <a href="#" class="nav-link">
+                 <i class="fa fa-user-circle"  aria-hidden="true"></i>
+                 <p >
+                   Employés
+                   <i class="fas fa-angle-left right"></i>
+                 </p>
+               </a>
+               <ul class="nav nav-treeview">
+                 <li class="nav-item">
+                   <a href="AjoutEmploye.html" class="nav-link">
+                     <i class="fa fa-user-plus"   aria-hidden="true"></i>
+                     <p >Ajout</p>
+                   </a>
+                 </li>
+                 <li class="nav-item">
+                   <a href="consulte1.html" class="nav-link">
+                     <i class="fa fa-list-alt"  aria-hidden="true"></i>
+                     <p >Consult</p>
+                   </a>
+                 </li>
+               </ul>
+             </li>
+             <li class="nav-item">
+               <a href="#" class="nav-link active">
+                 <i class="fa fa-briefcase"   aria-hidden="true"></i>
+                 <p>
+                    Bureaux
+                   <i class="fas fa-angle-left right"></i>
+                 </p>
+               </a>
+               <ul class="nav nav-treeview">
+                 <li class="nav-item">
+                   <a href="ajoutebureau.html" class="nav-link">
+                     <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                     <p >Ajout </p>
+                   </a>
+                 </li>
+                 <li class="nav-item">
+                   <a href="consulte2.html" class="nav-link active">
+                     <i class="fa fa-list-alt"   aria-hidden="true"></i>
+                     <p >Consult</p>
+                   </a>
+                 </li>
+               </ul>
+             </li>
+             <li class="nav-item">
+               <a href="#" class="nav-link">
+                 <i class="fa fa-podcast"   aria-hidden="true"></i>
+                 <p >
+                   Équipements 
+                   <i class="fas fa-angle-left right"></i>
+                 </p>
+               </a>
+               <ul class="nav nav-treeview">
+                 <li class="nav-item">
+                   <a href="ajoutecapteur.html" class="nav-link">
+                      <i class="fa fa-plus-circle"   aria-hidden="true"></i>
+                     <p >Ajout </p>
+                   </a>
+                 </li>
+                 <li class="nav-item">
+                   <a href="consulte3.html" class="nav-link">
+                     <i class="fa fa-list-alt"  aria-hidden="true"></i>
+                     <p >Consult</p>
+                   </a>
+                 </li>
+               </ul>
+               
+             </li>
+           <div>
+             <li class="nav-header">     <hr> </li>
+           
+             <li class="nav-item">
+               <a href="pages/calendar.html" class="nav-link">
+                 <i class="nav-icon fas fa-calendar-alt" ></i>
+                 <p >
+                   Calendrier
+                   <span class="badge badge-info right">2</span>
+                 </p>
+               </a>
+             </li>
+             <li class="nav-item">
+               <a href="login.html" class="nav-link" onclick="logout()">
+                 <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+   
+                 <p >Se déconnecter</p>
+               </a>
+             </li>
+             <script>
+               function logout(){
+                 var d = window.confirm("Êtes-vous sûr de se déconnecter?");
+                 if (d == true)
+                 {
+                   localStorage.removeItem("idAdmin");
+                   location.replace("login.html");
+                 }
+               }
+             </script>
+           </ul>
+         </nav>
+        
+       </div>
+       <script>
+        if(!localStorage.getItem("idAdmin")){
+          location.replace("login.html");
+        }
+      </script>
+     </aside>
+
+    <div class="content-wrapper">
+      <br>
+      <br>
+      <section class="content">
+        <div class="container-fluid">
+       
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h1 class="card-title">Consommation des èquipements par Milliwatt en 24 h </h1>
+                    <div class="card-tools">
+                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                     </button>
+                     <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                     </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="position-relative mb-4">
+                  <canvas id="graph"height="200" ></canvas> 
+                     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+                     <script src="javascript/grahpjour.js"></script>
+                     </div>
+                     </div>
+                      </div>
+                      </div>
+             <div class="col-md-6">
+            <div class="card card-primary">
+                <div class="card-header">
+                  <h1 class="card-title">Consommation des èquipements par Milliwatt en mois</h1>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                   <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                   <i class="fas fa-times"></i>
+                    </button>
+               </div>
+                </div>
+                <div class="card-body">
+                  <div class="position-relative mb-4">
+                    <div>
+                      <canvas id="myChart" height="200"></canvas>
+                    </div>
+                   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script src="javascript/garhpmoi.js"></script>
+                     </div>
+                  </div>
+              </div>
+            </div>
+           </div>
+  <div class="row">
+    <div class="col-6">
+      <div class="card card-primary">
+        <div class="card-header">
+          <h1 class="card-title"> Historique de climatiseur </h1>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+           <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+           <i class="fas fa-times"></i>
+            </button>
+       </div>
+        </div>
+       <div class="card">
+        <div class="card-header">
+          <div class="form-group">
+             <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-search-plus" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input
+              id="Input1"
+              onkeyup="myFunction1()"
+              class="form-control form-control-sidebar"
+              type="search"
+              placeholder="Rechercher"
+              aria-label="Search"
+            />
+            
+            </div>
+            
+          </div>
+        </div>
+       
+        <div class="card-body table-responsive p-0" style="height: 300px;">
+          <table class="table table-head-fixed text-nowrap" id="tab1">
+            <thead>
+              <tr>
+                <th>  Date  </th>
+               <th>status</th>
+               <th>Heure</th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+               </tr>
+            </thead>
+             </table>
+        </div>
+      </div>
+    </div>
+  </div>
+   <div class="col-6">
+      <div class="card card-primary">
+        <div class="card-header">
+          <h1 class="card-title"> Historique de Chauffage </h1>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+           <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+           <i class="fas fa-times"></i>
+            </button>
+       </div>
+        </div>
+       <div class="card">
+        <div class="card-header">
+         <div class="form-group">
+             <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-search-plus" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input
+    id="Input2"
+    onkeyup="myFunction2()"
+    class="form-control form-control-sidebar"
+    type="search"
+    placeholder="Rechercher"
+    aria-label="Search"
+  />
+   </div> 
+  </div>
+   </div>
+   <div class="card-body table-responsive p-0" style="height: 300px;">
+          <table class="table table-head-fixed text-nowrap" id="tab2">
+            <thead>
+              <tr>
+                <th>Date </th>
+               <th>status</th>
+               <th>Heure</th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               </tr>
+            </thead>
+            
+          </table>
+        </div>
+       
+      </div>
+      </div>
+  </div>
+</div>
+  </div>
+ 
+    <div class="row">
+    <div class="col-6">
+      <div class="card card-primary">
+        <div class="card-header">
+          <h1 class="card-title">  Historique d'éclairage </h1>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+           <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+           <i class="fas fa-times"></i>
+            </button>
+       </div>
+        </div>
+     <div class="card">
+        <div class="card-header">
+          <div class="form-group">
+            
+  
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-search-plus" aria-hidden="true"></i>
+                </span>
+              </div>
+              <input
+    id="Input3"
+    onkeyup="myFunction3()"
+    class="form-control form-control-sidebar"
+    type="search"
+    placeholder="Rechercher"
+    aria-label="Search"
+  />
+ </div>
+ </div>
+   </div>
+  <div class="card-body table-responsive p-0" style="height: 300px;">
+          <table class="table table-head-fixed text-nowrap" id="tab3">
+            <thead>
+              <tr>
+                <th> Date </th>
+                <th>status</th>
+               <th>Heure</th>
+               <th></th>
+               <th></th>
+               </tr>
+            </thead>
+            
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </section>
+       </div>
+   <aside class="control-sidebar control-sidebar-dark">
+  </aside>
+   
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="plugins/select2/js/select2.full.min.js"></script>
+  <script src="plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+  <script src="plugins/moment/moment.min.js"></script>
+  <script src="plugins/inputmask/jquery.inputmask.min.js"></script>
+ <script src="plugins/daterangepicker/daterangepicker.js"></script>
+  <script src="plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+  <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+  <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+  <script src="plugins/bs-stepper/js/bs-stepper.min.js"></script>
+  <script src="plugins/dropzone/min/dropzone.min.js"></script>
+  <script src="dist/js/adminlte.min.js"></script>
+  <script src="javascript/histbureau.js"></script>
+  <script src="javascript/clima.js"></script>
+  <script src="javascript/chouf.js"></script>
+  
+  </body>
+  </html>

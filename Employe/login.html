@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="style5.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    
+    
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  </head>
+
+
+
+
+
+
+    
+    <title> Se connecter </title>
+    
+</head>
+<body>
+    <div class ="loginbox">
+        <center > <img src="image/img/logo.png" class="img-circle" alt="Cinque Terre" height="75px" width="110px" >   </center>
+      
+         <h1> Chaaben Group </h1>
+            <form action="" method="post"  onsubmit="return false" >
+                 <p> E-mail</p>
+                <input  placeholder="Entrer e-mail"  id="email" name="email"  class="champ"  >
+               <p> Mot de passe</p>
+                <input type="password" class="champ" placeholder="Entrer mot de passe"  id="pwd" name="pswd">
+                <input type="submit" name=""    value="Login" href="#"   onclick="login()" > <br>
+                
+               </form>
+            
+    </div>
+ </body>
+ <script>
+  function login() {
+    var url = "http://192.168.43.167:3000/empls"; //definir la collection a manupiler
+    var email = document.getElementById("email").value;
+    var pwd = document.getElementById("pwd").value; // récupération de la password saisir dans notre code html
+    var xhr = new XMLHttpRequest(); // definir une request de connection standard js
+    xhr.open("GET", url, true); // choisir la méthode get comme une méthode d'accès au serveur et récupérer les données .
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8"); // choisir l'encodage utf-8 pour que la resultat retourne peux avoir différents format de text comme les côté , les accent …..
+    xhr.onload = function () {
+      // load les données à partir de la serveur -> début connection
+      var users = JSON.parse(xhr.responseText); // conversion des données en format json
+      if (xhr.readyState == 4 && xhr.status == "200") {
+        // if la status retourné par la serveur est 200 donc ont dans le cas succes
+        access = false; // définir une variable access par défaut avec la valeur false
+        /* bouclé la liste des utilisateurs */
+        for (i = 0; i < users.length; i++) {
+          if (users[i].email == email && users[i].password == pwd  ) {
+            // if les données recuperer et la valeur auctual dans la base sont égaux alors en changer access a true .
+            access = true;
+            localStorage.setItem("idAdmin", users[i]._id)
+          var modre  = users[i].mode;
+          
+          }
+        }
+  // si la variable accès contient true on est autorisé à accéder.
+  if ((access) && ( modre == 'Manuele' ))  {
+         location.replace("index.html");
+          alert( " Bienvenue chez chaben Group");
+          
+        } else if ((access) && ( modre == 'Automatique' ))  {
+          location.replace("index1.html");
+          
+        }
+        else {
+        alert("  Votre adresse ou bien mot de passe  est incorrect");
+       }
+      } else {
+        alert("Compte n'existe  pas");
+        
+  
+      }
+    };
+    xhr.send();
+  }
+  </script>
+  </html>

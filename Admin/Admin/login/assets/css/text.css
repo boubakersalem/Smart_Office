@@ -1,0 +1,53 @@
+@import url("https://fonts.googleapis.com/css?family=Inconsolata:700");
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	min-height: 100vh;
+	background-color: black;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	color: coral;
+	padding: 2rem;
+	overflow-x: hidden;
+}
+
+.container {
+	max-width: 100%;
+	width: 80rem;
+}
+
+h2 {
+	position: relative;
+	font-family: Inconsolata, monospace;
+	font-size: 1.8rem;
+	text-transform: uppercase;
+	
+
+	width: 515px;
+	height: 168px;
+	
+	transform: scale(var(--x, 1));
+	transform-origin: var(--o, center);
+	margin: 0 auto;
+}
+
+.char {
+	--i: calc(50% / var(--char-total));
+	offset-path: path('M.4 84.1s127.4 188 267.7 0 247.3 0 247.3 0');
+	offset-distance: calc(var(--char-index) * 1.2rem);
+	position: absolute;
+	animation: move 1500ms infinite alternate forwards var(--delay, 0ms);
+}
+
+
+@keyframes move {
+	100% {
+		--i: 2rem;
+		offset-distance: calc((var(--char-index) * 1.2rem) + 12rem);
+	}
+}

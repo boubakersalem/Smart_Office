@@ -1,0 +1,287 @@
+body{
+	background: #f7f7f7;
+	font-family: Roboto;
+}
+
+#sh_app{
+	padding-top: 5px;
+}
+
+#sh_app > section{
+	padding: 20px;
+}
+
+#sh_header{
+	padding: 0 20px !important;
+}
+
+#sh_header div,
+#sh_header i{
+	font-size: 14px;
+	font-weight: 500;
+}
+
+#sh_header_bar span{
+	font-size: 14px;
+	font-weight: 600;
+	color: rgba(0,0,0,0.4);
+}
+
+#sh_header_bar span.heading{
+	font-size: 26px;
+	font-weight: 800;
+	color: rgba(0,0,0,0.9);
+}
+
+#sh_header_bar img{
+	height: 50px;
+	width: 50px;
+	border-radius: 50%;
+	margin-top: -12px;
+}
+
+#sh_header_bar span.heading:after{
+	position: absolute;
+	display: block;
+	content: '3';
+	height: 16px;
+	width: 16px;
+	background: #007aff;
+	line-height: 12px;
+	text-align: center;
+	color: #fff;
+	font-size: 8px;
+	border-radius: 50%;
+	right: -80px;
+	top: -10px;
+	z-index: 1;
+	border: 1.5px solid #f7f7f7;
+}
+
+#sh_body{
+	padding-top: 0 !important;
+}
+
+.body_heading{
+	text-transform: uppercase;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	color: rgba(0,0,0,0.4);
+	margin-bottom: 15px;
+}
+
+#sh_body i{
+	color: #007aff;
+}
+
+.sh_tile{
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.sh_tile ul{
+	padding: 0;
+}
+
+.sh_tile ul li{
+	list-style: none;
+	float: left;
+}
+
+.sh_tile ul li:last-child{
+	position: absolute;
+	right: 0;
+}
+
+.sh_tile ul li i{
+	display: block;
+	font-size: 25px;
+	font-weight: 800;
+	margin-bottom: 30px;
+}
+
+li.inactive i{
+	color: rgba(0,0,0,0.4) !important;
+}
+
+.sh_tile ul li.box{
+	width: 46%;
+	padding: 25px;
+	background: #fff;
+	border-radius: 10px;
+	box-shadow: 3px 3px 15px 5px rgba(0,0,0,0.1),
+				-3px -3px 15px 5px rgba(255,255,255,0.1);
+	border: 1px solid rgba(0,0,0,0.08);
+}
+
+.sh_tile ul li.box span span{
+	display: block;
+}
+
+span.switch{
+	position: absolute;
+	height: 12px;
+	width: 22px;
+	background: #007aff;
+	border-radius: 35px;
+	top: 26px;
+	left: 110px;
+}
+
+span.button{
+	position: absolute;
+	height: 8px;
+	width: 8px;
+	background: #fff;
+	border-radius: 50%;
+	margin-top: 2px;
+	box-shadow: 3px 3px 4px -1px rgba(0,0,0,0.3),
+				-3px -3px 4px -1px rgba(255,255,255,0.3);
+	right: 2px;
+}
+
+li.inactive span.switch{
+	background: rgba(0,0,0,0.25);
+}
+
+li.inactive span.button{
+	box-shadow: 3px 3px 4px -1px rgba(0,0,0,0.3),
+				-3px -3px 4px -1px rgba(255,255,255,0.3);
+	left: 2px;
+}
+
+.sh_tile .meta_desc{
+	font-size: 17px;
+	font-weight: 700;
+	color: rgba(0,0,0,0.8);
+}
+
+li.inactive span.meta_desc{
+	color: rgba(0,0,0,0.5);
+}
+
+.sh_tile .desc{
+	font-size: 12px;
+	font-weight: 500;
+	color: rgba(0,0,0,0.3);
+}
+
+div.music{
+	height: 65px;
+	line-height: 65px;
+	font-weight: 600;
+	background: #fff;
+	box-shadow: 3px 3px 15px 5px rgba(0,0,0,0.1),
+				-3px -3px 15px 5px rgba(255,255,255,0.1);
+	border: 1px solid rgba(0,0,0,0.08);
+	border-radius: 8px;
+	margin-top: 15px;
+	margin-bottom: 25px;
+}
+
+.music .icon{
+	font-size: 30px;
+}
+
+.music .content{
+	text-align: left;
+}
+
+.music .content span{
+	display: block;
+}
+
+.music .content span:first-child{
+	font-size: 17px;
+	margin-top: -10px;
+}
+
+.music .content span:last-child{
+	font-size: 12px;
+	font-weight: 600;
+	color: rgba(0,0,0,0.5);
+	margin-top: -45px;
+}
+
+.play_icon i{
+	color: rgba(0,0,0,0.3) !important;
+}
+
+.play_icon i.fa-pause{
+	color: rgba(0,0,0,0.7) !important;
+}
+
+div.blank_tab{
+	height: 65px;
+	line-height: 65px;
+	color: rgba(0,0,0,0.5);
+	background: transparent;
+	border: 1px solid rgba(0,0,0,0.2);
+	border-radius: 8px;
+	margin-top: 15px;
+	margin-bottom: 25px;
+}
+
+.blank_tab > div > div:first-child{
+	text-align: center;
+	font-size: 25px;
+}
+
+.blank_tab > div > div:last-child{
+	text-align: left;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+#sh_footer{
+	position: fixed;
+	height: 70px;
+	background: #fff;
+	bottom: 0;
+	border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+#sh_footer ul{
+	padding: 0;
+}
+
+#sh_footer ul li{
+	list-style: none;
+	float: left;
+	width: 33.33%;
+	text-align: center;
+	margin-top: -10px;
+}
+
+#sh_footer ul li span{
+	display: block;
+	font-size: 10px;
+	color: rgba(0,0,0,0.4);
+	margin-top: -5px;
+}
+
+#sh_footer ul li i{
+	font-size: 20px;
+	color: rgba(0,0,0,0.35);
+}
+
+#sh_footer li.active i{
+	color: #000;
+}
+
+#sh_footer li.active span{
+	color: #000;
+}
+
+#sh_footer:after{
+	position: absolute;
+	display: block;
+	content: '';
+	height: 4px;
+	width: 40%;
+	background: rgba(0,0,0,0.2);
+	border-radius: 3px;
+	left: 30%;
+	margin-top: 12px;
+}

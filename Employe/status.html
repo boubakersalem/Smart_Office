@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>  Liste des bureaux </title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+ 
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+ 
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" type="text/css" href="dist/css/style2.css">
+
+</head>
+<body class="hold-transition layout-top-nav">
+  <div class="wrapper">
+ 
+    <nav class="main-header navbar navbar-expand-md navbar-light navbar-primary">
+      <div class="container">
+      
+        <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"   style='color:#f8f8f8' ></span>
+        </button>
+  
+        <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+         
+          <ul class="navbar-nav">
+          
+            <li class="nav-item">
+              <a href="index.html" class="nav-link"  style='color:#f8f8f8' >Acceuil</a>
+            </li>
+            <li class="nav-item">
+              <a href="equipement.html"class="nav-link"  style='color:#f8f8f8'>Équipements</a>
+            </li>
+            <li class="nav-item">
+              <a href="status.html" class="nav-link" style='color:#f8f8f8'> Présence</a>
+            </li>
+            <li class="nav-item">
+              <a href="bureau.html" class="nav-link"style='color:#f8f8f8'> État et Consommation </a>
+            </li>
+          </ul>
+  
+         
+        </div>
+  
+        <!-- Right navbar links -->
+        <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+          <li>
+            <a href="#" class="navbar-brand">
+              <img src="" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8" id="image" >
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="login.html" class="nav-link" onclick="logout()">
+             <p class="text-white">Se déconnecter</p>
+            </a>
+          </li>
+          <script>
+            function logout(){
+              var d = window.confirm("Êtes-vous sûr de se déconnecter?");
+              if (d == true)
+              {
+                localStorage.removeItem("idAdmin");
+                location.replace("login.html");
+              }
+            }
+          </script>
+          <script> 
+            var c = localStorage.getItem("idAdmin");
+                console.log(c);
+            
+                // Post a user
+                var url3 = "http://192.168.43.167:3000/empls/" + c ;
+                var xhr3 = new XMLHttpRequest();
+                xhr3.open("GET", url3, true);
+            
+                xhr3.onload = function () {
+                    var empl = JSON.parse(xhr3.responseText);
+                    if (xhr3.readyState == 4 && xhr3.status == "200") {
+                     
+                    
+                      document.getElementById("image").src = empl.picture;
+                    } else {
+            
+                        console.log("error");
+                    }
+                }
+            
+                xhr3.send(null);
+             
+            </script>
+        </ul>
+      </div>
+      
+    </nav>
+  
+    <script>
+      if(!localStorage.getItem("idAdmin")){
+        location.replace("login.html");
+      }
+    </script>  
+   
+    
+  
+  <div class="content-wrapper">
+  <br>
+  <br>
+    <section class="content">
+      <div class="col-sm-12">
+        <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title"> Liste des bureaux</h3>
+            </div>
+        </div>
+        
+
+        </div>
+
+      <!-- Default box -->
+      <div class="card card-solid">
+        <div class="card-body pb-0" >
+          
+
+
+          <div class="row" id="box">
+          </div>
+  
+
+
+        </div>
+      </div>
+      
+    </section>
+  
+
+<script src="plugins/jquery/jquery.min.js"></script>
+
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+<script src="dist/js/adminlte.min.js"></script>
+<script src="dist/js/demo.js"></script>
+<script>
+  var request = new XMLHttpRequest()
+  request.open('GET', 'http://192.168.43.167:3000/bureaus', true)
+
+  request.onload = function()
+  {
+      var data = JSON.parse(this.response)
+     
+      console.log(data);
+      var j = 1;
+      data.forEach(i =>{ 
+      
+     
+      let htmlContent = '<div class="col-md-4 col-sm-6"><div class="box"><img src="image/img/b2.jpg" class="img1"><div class="box_content"><div class="content"> <h5> Nom empolyé  : '+i.cin+ '</h5> <h5 > Nom bureau   : '+i.name+ '</h5>  <h5> Numéro bureau   : '+i.numBureau+ '</h5>  <button type="button" class="btn btn-success"  disabled >présent</button> </div> </div> </div> </div>';
+                          
+                      
+
+const element = document.getElementById("box");
+element.insertAdjacentHTML('beforeend', htmlContent);
+
+      
+
+});
+     
+  }
+
+  request.send()
+  // Send request
+ 
+</script>
+</body>
+</html>
+
